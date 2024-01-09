@@ -331,6 +331,8 @@ class ICloudPyService:
 
             if self.session_data.get("session_id"):
                 headers["X-Apple-ID-Session-Id"] = self.session_data.get("session_id")
+            headers["Accept"] = "application/json"
+            headers["Content-Type"] = "application/json"
 
             try:
                 self.session.post(
@@ -360,7 +362,8 @@ class ICloudPyService:
 
         try:
             req = self.session.post(
-                f"{self.setup_endpoint}/accountLogin", data=json.dumps(data)
+                f"{self.setup_endpoint}/accountLogin", data=json.dumps(data),
+                headers={"Accept": "application/json", "Content-Type": "application/json"}
             )
             self.data = req.json()
         except ICloudPyAPIResponseException as error:
@@ -377,7 +380,8 @@ class ICloudPyService:
 
         try:
             self.session.post(
-                f"{self.setup_endpoint}/accountLogin", data=json.dumps(data)
+                f"{self.setup_endpoint}/accountLogin", data=json.dumps(data),
+                headers={"Accept": "application/json", "Content-Type": "application/json"}
             )
 
             self.data = self._validate_token()
@@ -389,7 +393,7 @@ class ICloudPyService:
         """Checks if the current access token is still valid."""
         LOGGER.debug("Checking session token validity")
         try:
-            req = self.session.post(f"{self.setup_endpoint}/validate", data="null")
+            req = self.session.post(f"{self.setup_endpoint}/validate", data="null", headers={"Accept": "application/json", "Content-type": "application/json"})
             LOGGER.debug("Session token is still valid")
             return req.json()
         except ICloudPyAPIResponseException as err:
@@ -464,6 +468,10 @@ class ICloudPyService:
             f"{self.setup_endpoint}/sendVerificationCode",
             params=self.params,
             data=data,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
         )
         return request.json().get("success", False)
 
@@ -477,6 +485,10 @@ class ICloudPyService:
                 f"{self.setup_endpoint}/validateVerificationCode",
                 params=self.params,
                 data=data,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
             )
         except ICloudPyAPIResponseException as error:
             if error.code == -21669:
@@ -499,6 +511,8 @@ class ICloudPyService:
 
         if self.session_data.get("session_id"):
             headers["X-Apple-ID-Session-Id"] = self.session_data.get("session_id")
+        headers["Accept"] = "application/json"
+        headers["Content-Type"] = "application/json"
 
         try:
             self.session.post(
@@ -527,6 +541,8 @@ class ICloudPyService:
 
         if self.session_data.get("session_id"):
             headers["X-Apple-ID-Session-Id"] = self.session_data.get("session_id")
+        headers["Accept"] = "application/json"
+        headers["Content-Type"] = "application/json"
 
         try:
             self.session.get(
