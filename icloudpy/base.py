@@ -475,20 +475,29 @@ class ICloudPyService:
         )
         return request.json().get("success", False)
 
-    def validate_verification_code(self, device, code):
+    def validate_verification_code(self, code):
         """Verifies a verification code received on a trusted device."""
-        device.update({"verificationCode": code, "trustBrowser": True})
-        data = json.dumps(device)
+
+        headers = self._get_auth_headers({"Accept": "application/json"})
+
+        if self.session_data.get("scnt"):
+            headers["scnt"] = self.session_data.get("scnt")
+
+        if self.session_data.get("session_id"):
+            headers["X-Apple-ID-Session-Id"] = self.session_data.get("session_id")
+        headers["Content-Type"] = "application/json"
+
 
         try:
             self.session.post(
-                f"{self.setup_endpoint}/validateVerificationCode",
+                f"{self.auth_endpoint}/verify/trusteddevice/securitycode",
                 params=self.params,
-                data=data,
-                headers={
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
+                data=json.dumps({
+                    "securityCode": {
+                        "code": code,
+                    }
+                }),
+                headers=headers
             )
         except ICloudPyAPIResponseException as error:
             if error.code == -21669:
@@ -497,6 +506,8 @@ class ICloudPyService:
             raise
 
         self.trust_session()
+
+        return not self.requires_2sa
 
         return not self.requires_2sa
 
