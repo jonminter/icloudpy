@@ -271,7 +271,7 @@ def main(args=None):
 
                 print("\nPlease enter validation code")
                 code = input("(string) --> ")
-                if not api.validate_verification_code(device, code):
+                if not api.validate_verification_code(code):
                     print("Failed to verify verification code")
                     sys.exit(1)
 
