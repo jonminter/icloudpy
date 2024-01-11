@@ -124,5 +124,9 @@ class RemindersService:
                 }
             ),
             params=params_reminders,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
         )
         return req.ok
